@@ -40,38 +40,36 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Security(security))
 
 ---
 
-## 📝 Steps to Fix
-
-### 1. Update requirements.txt on GitHub
+## 📝 How to Fix on GitHub
 
 1. Go to your GitHub repository
-2. Click **`requirements.txt`**
-3. Click the **pencil icon** (✏️)
-4. Replace with the minimal version above
-5. Commit changes
-
-### 2. Update app/auth.py on GitHub
-
-1. Navigate to `app/auth.py` in GitHub
-2. Click the **pencil icon** (✏️)
-3. Replace entire content with the code above
-4. Commit changes
-
-### 3. Trigger Redeploy
-
-Wait 1-2 minutes or click **"Manual Deploy"** on Render
+2. Navigate to `app/auth.py`
+3. Click the **pencil icon** (✏️) to edit
+4. **Select all and delete** (Ctrl+A, Delete)
+5. **Paste the clean code above**
+6. Scroll down, click **"Commit changes"**
 
 ---
 
-## 🎯 Alternative: Use Even Simpler Requirements
+## ⚠️ The Problem
 
-If it still fails, try this **absolute minimum**:
+When you copied the code, fancy characters got mixed in:
+- **Wrong:** `—` (em dash, Unicode U+270F)
+- **Correct:** `-` (regular dash/hyphen)
+
+This happened in comments or strings.
+
+---
+
+## 🎯 After Fixing
+
+1. Wait 1-2 minutes for auto-deploy
+2. Or trigger **"Manual Deploy"** in Render
+3. Watch the logs
+
+You should now see:
 ```
-fastapi
-uvicorn
-jinja2
-pydantic
-pydantic-settings
-sqlalchemy
-python-dotenv
-slowapi
+==> Starting service
+INFO:     Started server process
+INFO:     Application startup complete.
+==> Your service is live! 🎉
