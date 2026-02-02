@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Test {{ test.test_id[:8] }} - RackLab-RTP{% endblock %}
+
+{% block content %}
+<div class="test-detail">
+    <div class="breadcrumb">
+        <a href="/">Dashboard</a> / Test {{ test.test_id[:8] }}
+    </div>
+    
+    <h2>Test Details</h2>
+    
+    <div class="detail-grid">
+        <div class="detail-section">
+            <h3>Summary</h3>
+            <table class="detail-table">
+                <tr>
+                    <th>Test ID:</th>
+                    <td><code>{{ test.test_id }}</code></td>
+                </tr>
+                <tr>
+                    <th>Type:</th>
+                    <td>{{ test.test_type }}</td>
+                </tr>
+                <tr>
+                    <th>Status:</th>
+                    <td><span class="badge {{ test.status }}">{{ test.status }}</span></td>
+                </tr>
+                <tr>
+                    <th>Duration:</th>
+                    <td>{{ test.duration_ms or 0 }}ms</td>
+                </tr>
+                <tr>
+                    <th>Started:</th>
+                    <td>{{ test.started_at }}</td>
+                </tr>
+                <tr>
+                    <th>Completed:</th>
+                    <td>{{ test.completed_at or "N/A" }}</td>
+                </tr>
+                {% if test.error_code %}
+                <tr>
+                    <th>Error Code:</th>
+                    <td><code>{{ test.error_code }}</code></td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        
+        <div class="detail-section">
+            <h3>Metrics</h3>
+            <pre>{{ test.metrics | tojson(indent=2) }}</pre>
+        </div>
+    </div>
+    
+    {% if rca %}
+    <div class="rca-section">
+        <h3>Root Cause Analysis</h3>
+        <div class="rca-card">
+            <p><strong>Category:</strong> <span class="badge">{{ rca.category }}</span></p>
+            <p><strong>Confidence:</strong> {{ (rca.confidence * 100) | round(1) }}%</p>
+            <p><strong>Root Cause:</strong> {{ rca.root_cause }}</p>
+            
+            <h4>Recommendations:</h4>
+            <ul>
+                {% for rec in rca.recommendations %}
+                <li>{{ rec }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="logs-section">
+        <h3>Logs</h3>
+        <pre class="logs">{% for log in test.logs %}{{ log }}
+{% endfor %}</pre>
+    </div>
+    
+    <div class="actions">
+        <a href="/api/export/{{ test.test_id }}?format=json" class="btn">Download JSON</a>
+        <a href="/api/export/{{ test.test_id }}?format=markdown" class="btn">Download Markdown</a>
+    </div>
+</div>
+{% endblock %}
