@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - RackLab-RTP{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <h2>Test Dashboard</h2>
+    
+    <!-- Summary Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total Tests</h3>
+            <p class="stat-value">{{ total_tests }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Passed</h3>
+            <p class="stat-value passed">{{ passed_tests }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Failed</h3>
+            <p class="stat-value failed">{{ failed_tests }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Pass Rate</h3>
+            <p class="stat-value">{{ pass_rate }}%</p>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filters">
+        <h3>Filters</h3>
+        <form method="get" action="/">
+            <select name="status" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                {% for status in test_statuses %}
+                <option value="{{ status }}" {% if current_status == status %}selected{% endif %}>
+                    {{ status }}
+                </option>
+                {% endfor %}
+            </select>
+            
+            <select name="test_type" onchange="this.form.submit()">
+                <option value="">All Test Types</option>
+                {% for test_type in test_types %}
+                <option value="{{ test_type }}" {% if current_test_type == test_type %}selected{% endif %}>
+                    {{ test_type }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    
+    <!-- Test History Table -->
+    <div class="test-table">
+        <h3>Test History</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Test ID</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                    <th>Started</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in test_runs %}
+                <tr>
+                    <td><code>{{ test.test_id[:8] }}</code></td>
+                    <td>{{ test.test_type }}</td>
+                    <td>
+                        <span class="badge {{ test.status }}">
+                            {{ test.status }}
+                        </span>
+                    </td>
+                    <td>{{ test.duration_ms or 0 }}ms</td>
+                    <td>{{ test.started_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="/test/{{ test.test_id }}" class="btn-small">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
