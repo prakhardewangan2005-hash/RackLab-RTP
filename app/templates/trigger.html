@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Trigger Test - RackLab-RTP{% endblock %}
+
+{% block content %}
+<div class="trigger-page">
+    <h2>Trigger New Test</h2>
+    
+    <div class="trigger-form">
+        <form id="testForm">
+            <div class="form-group">
+                <label for="test_type">Test Type:</label>
+                <select id="test_type" name="test_type" required>
+                    {% for test_type in test_types %}
+                    <option value="{{ test_type }}">{{ test_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="inject_failure">Inject Failure (Optional):</label>
+                <select id="inject_failure" name="inject_failure">
+                    {% for failure_type in failure_types %}
+                    <option value="{{ failure_type }}">{{ failure_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="failure_probability">Failure Probability:</label>
+                <input type="range" id="failure_probability" name="failure_probability" 
+                       min="0" max="1" step="0.1" value="0">
+                <span id="prob_value">0.0</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="auth_token">Auth Token:</label>
+                <input type="password" id="auth_token" name="auth_token" 
+                       placeholder="Enter your auth token" required>
+            </div>
+            
+            <button type="submit" class="btn">Run Test</button>
+        </form>
+        
+        <div id="result" class="result-message"></div>
+    </div>
+</div>
+
+<script>
+    // Update probability display
+    document.getElementById('failure_probability').addEventListener('input', function(e) {
+        document.getElementById('prob_value').textContent = parseFloat(e.target.value).toFixed(1);
+    });
+    
+    // Handle form submission
+    document.getElementById('testForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {
+            test_type: formData.get('test_type'),
+            inject_failure: formData.get('inject_failure'),
+            failure_probability: parseFloat(formData.get('failure_probability'))
+        };
+        
+        const token = formData.get('auth_token');
+        const resultDiv = document.getElementById('result');
+        
+        try {
+            resultDiv.innerHTML = '<p class="info">Starting test...</p>';
+            
+            const response = await fetch('/api/tests/run', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                resultDiv.innerHTML = `
+                    <p class="success">Test started successfully!</p>
+                    <p>Test ID: <code>${result.test_id}</code></p>
+                    <p><a href="/test/${result.test_id}">View test details</a></p>
+                `;
+            } else {
+                resultDiv.innerHTML = `<p class="error">Error: ${result.detail}</p>`;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<p class="error">Error: ${error.message}</p>`;
+        }
+    });
+</script>
+{% endblock %}
