@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-jinja2
-pydantic
-pydantic-settings
-sqlalchemy
-python-dotenv
-slowapi
-python-multipart
