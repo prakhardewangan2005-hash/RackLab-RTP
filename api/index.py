@@ -4,7 +4,6 @@ from fastapi import FastAPI
 logging.basicConfig(level=logging.INFO)
 
 try:
-    # your real app
     from app.main import app as real_app
     app = real_app
 except Exception:
@@ -15,5 +14,5 @@ except Exception:
     def _startup_failed():
         return {
             "status": "startup_failed",
-            "hint": "Open Vercel -> Project -> Functions -> api/index.py -> Logs to see the traceback."
+            "next": "Open Vercel -> Project -> Functions -> api/index.py -> Logs for traceback"
         }
